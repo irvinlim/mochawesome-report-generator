@@ -52,7 +52,7 @@ class TestContext extends Component {
     );
   }
 
-  renderContextContent = (content, title, highlight = false) => {
+  renderContextContent = (content, title) => {
     // Images
     if (imgRegEx.test(content)) {
       return this.renderImage(content, title);
@@ -63,10 +63,15 @@ class TestContext extends Component {
       return this.renderLink(content, title);
     }
 
-    // Default
-    const code = isString(content) ? content : JSON.stringify(content, null, 2);
+    // Simple strings
+    if (isString(content)) {
+      return <CodeSnippet className={ cx('code-snippet') } code={ content } highlight={ false } />;
+    }
+
+    // All other types, including primitives, objects and arrays should have syntax highlighting
+    const code = JSON.stringify(content, null, 2);
     return (
-      <CodeSnippet className={ cx('code-snippet') } code={ code } highlight={ highlight } />
+      <CodeSnippet className={ cx('code-snippet') } code={ code } highlight />
     );
   }
 
@@ -92,7 +97,7 @@ class TestContext extends Component {
     return (
       <div { ...containerProps } >
         <h4 className={ cx('context-item-title') }>{ title }:</h4>
-        { this.renderContextContent(value, title, true) }
+        { this.renderContextContent(value, title) }
       </div>
     );
   }
